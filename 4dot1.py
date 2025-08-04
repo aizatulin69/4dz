@@ -10,7 +10,7 @@ def total_salary(path):
                 match = re.findall(r'\d+', line)
                 if match:
                     try:
-                        total += int(match[0])
+                        total += float(match[0])
                         count += 1
                     except ValueError:
                         print(f"Неможливо створити число: {match[0]}")
