@@ -1,81 +1,85 @@
-all_contacts = []
+
+def parse_command(command):
+    parts = command.strip().split()
+    action = parts[0].lower()
+    args = parts[1:]
+    return action, args
 
 
 def hallo():
-    print('Hallo, how can I help you?')
+    return 'Hallo, how can I help you?'
 
 
-def add_contact(comand_input):
-    is_repeat = False
-    text = comand_input.strip().split(' ')
-    name = text[1]
-    contact = text[2]
+def add_contact(args, contacts):
+    if len(args) < 2:
+        return "Please enter name and phone number."
+    name, contact = args[0], args[1]
     if not contact.isdigit():
-        raise ValueError
-    for contact_dict in all_contacts:
-        if name in contact_dict:
-            is_repeat = True
-            break
-    if not is_repeat:
-        all_contacts.append({name: contact})
-        print('Contact added.')
-    else:
-        print('Contact already exists.')
+        return "Invalid phone number."
+
+    for d in contacts:
+        if name in d:
+            return "Contact already exists."
+
+    contacts.append({name: contact})
+    return "Contact added."
 
 
-def change_contact(comand_input):
-    text = comand_input.strip().split(' ')
-    name = text[1]
-    new_contact = text[2]
-    for i in range(len(all_contacts)):
-        if name in all_contacts[i]:
-            all_contacts[i][name] = new_contact
-            print("Contact changed.")
-            return
-    raise KeyError
+def change_contact(args, contacts):
+    if len(args) < 2:
+        return "Please enter name and new phone number."
+    name, new_contact = args[0], args[1]
+    for d in contacts:
+        if name in d:
+            d[name] = new_contact
+            return "Contact changed."
+    return "Contact not found."
 
 
-def show_phone(comand_input):
-    text = comand_input.strip().split(' ')
-    name = text[1]
-    for contact in all_contacts:
-        if name in contact:
-            print(contact[name])
-            return
-    raise KeyError
+def show_phone(args, contacts):
+    if len(args) < 1:
+        return "Please enter name."
+    name = args[0]
+    for d in contacts:
+        if name in d:
+            return d[name]
+    return "Contact not found."
 
 
-def show_all():
-    print(all_contacts)
+def show_all(contacts):
+    if not contacts:
+        return "No contacts available."
+    sorted_contacts = sorted(contacts, key=lambda d: list(d.keys())[0])
+    return '\n'.join([f"{name}: {number}" for d in sorted_contacts for name, number in d.items()])
 
 
-def close():
-    print("Good bye!")
+def close_handler():
+    return "Good bye!"
 
 
 def main():
+    contacts = []
 
     while True:
-        comand = input(">>> ").strip().lower()
+        command = input(">>> ")
+        action, args = parse_command(command)
 
-        action = comand.strip().split(' ')[0]
-
-        if action.lower() in ('hallo', 'hi'):
-            hallo()
-        elif action.lower() == 'add':
-            add_contact(comand)
-        elif action.lower() == 'change':
-            change_contact(comand)
-        elif action.lower() == 'phone':
-            show_phone(comand)
-        elif action.lower() == 'all':
-            show_all()
-        elif action.lower() in ('close', 'exit', 'bye'):
-            close()
-            return False
+        if action in ('hallo', 'hi'):
+            print(hallo())
+        elif action == 'add':
+            print(add_contact(args, contacts))
+        elif action == 'change':
+            print(change_contact(args, contacts))
+        elif action == 'phone':
+            print(show_phone(args, contacts))
+        elif action == 'all':
+            print(show_all(contacts))
+        elif action in ('close', 'exit', 'bye'):
+            print(close_handler())
+            break
         else:
-            print('Please, enter another command')
-            
+            print("Unknown command. Try again.")
+
 
 if __name__ == "__main__":
     main()
@@ -83,3 +87,4 @@ if __name__ == "__main__":
             
 
         
+
