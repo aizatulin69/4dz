@@ -6,8 +6,8 @@ def parse_command(command):
     return action, args
 
 
-def hallo():
-    return 'Hallo, how can I help you?'
+def hello():
+    return 'Hello, how can I help you?'
 
 
 def add_contact(args, contacts):
@@ -16,12 +16,9 @@ def add_contact(args, contacts):
     name, contact = args[0], args[1]
     if not contact.isdigit():
         return "Invalid phone number."
-
-    for d in contacts:
-        if name in d:
-            return "Contact already exists."
-
-    contacts.append({name: contact})
+    if name in contacts:
+        return "Contact already exists."
+    contacts[name] = contact
     return "Contact added."
 
 
@@ -29,10 +26,9 @@ def change_contact(args, contacts):
     if len(args) < 2:
         return "Please enter name and new phone number."
     name, new_contact = args[0], args[1]
-    for d in contacts:
-        if name in d:
-            d[name] = new_contact
-            return "Contact changed."
+    if name in contacts:
+        contacts[name] = new_contact
+        return "Contact changed."
     return "Contact not found."
 
 
@@ -40,32 +36,27 @@ def show_phone(args, contacts):
     if len(args) < 1:
         return "Please enter name."
     name = args[0]
-    for d in contacts:
-        if name in d:
-            return d[name]
-    return "Contact not found."
-
+    return contacts.get(name, "Contact not found.")
 
 def show_all(contacts):
     if not contacts:
         return "No contacts available."
-    sorted_contacts = sorted(contacts, key=lambda d: list(d.keys())[0])
-    return '\n'.join([f"{name}: {number}" for d in sorted_contacts for name, number in d.items()])
+    return '\n'.join(f"{name}: {number}" for name, number in sorted(contacts.items()))
 
 
-def close_handler():
+def close():
     return "Good bye!"
 
 
 def main():
-    contacts = []
+    contacts = {}
 
     while True:
         command = input(">>> ")
         action, args = parse_command(command)
 
-        if action in ('hallo', 'hi'):
-            print(hallo())
+        if action in ('hello', 'hi'):
+            print(hello())
         elif action == 'add':
             print(add_contact(args, contacts))
         elif action == 'change':
@@ -75,7 +66,7 @@ def main():
         elif action == 'all':
             print(show_all(contacts))
         elif action in ('close', 'exit', 'bye'):
-            print(close_handler())
+            print(close())
             break
         else:
             print("Unknown command. Try again.")
@@ -87,4 +78,5 @@ if __name__ == "__main__":
             
 
         
+
 
